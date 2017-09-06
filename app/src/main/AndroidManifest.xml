@@ -18,7 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailActivity"></activity>
+        <activity android:name=".DetailActivity">
+            <category android:name="android.intent.category.BROWSABLE"/>
+        </activity>
     </application>
 
 </manifest>

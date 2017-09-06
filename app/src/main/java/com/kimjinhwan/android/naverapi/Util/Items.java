@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by XPS on 2017-09-05.
  */
 
-public class Items {
+public class Items implements Serializable{
 
         private String title;
 

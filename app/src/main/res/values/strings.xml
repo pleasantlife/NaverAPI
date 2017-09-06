@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NaverAPI</string>
+    <string name="naver_server_url">https://openapi.naver.com/v1/search/shop?</string>
 </resources>

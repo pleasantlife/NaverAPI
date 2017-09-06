@@ -8,5 +8,11 @@ public class Client {
 
     public static final String CLIENT_ID = "OzYyCwp8a0JpBJiKXycC";
     public static final String CLIENT_SECRET = "SszZOHXjYS";
-    public static final String SERVER_URL = "https://openapi.naver.com/v1/search/shop?query=";
+    public static ThreadLocal<String> SERVER_URL = new ThreadLocal<String>() {
+        @Override
+        protected String initialValue() {
+            return "https://openapi.naver.com/v1/search/shop?display=" + SEE_RESULT + "&query=";
+        }
+    };
+    public static int SEE_RESULT = 20;
 }

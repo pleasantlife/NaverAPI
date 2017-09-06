@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        android:text="상품명"
         app:layout_constraintLeft_toRightOf="@+id/imageProduct"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        android:text="최저가"
         app:layout_constraintLeft_toRightOf="@+id/imageProduct"
         app:layout_constraintTop_toBottomOf="@+id/textHPrice" />
 
