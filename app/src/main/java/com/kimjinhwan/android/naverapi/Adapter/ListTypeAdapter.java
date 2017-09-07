@@ -28,6 +28,7 @@ public class ListTypeAdapter extends RecyclerView.Adapter<ListTypeAdapter.Holder
     List<Items> items = new ArrayList<>();
     Items itemList;
     Context context;
+    long lprice;
 
     public ListTypeAdapter(Context context){
         this.context = context;
@@ -48,7 +49,9 @@ public class ListTypeAdapter extends RecyclerView.Adapter<ListTypeAdapter.Holder
         itemList = items.get(position);
         holder.setPosition(position);
         holder.textTitle.setText(itemList.getTitle());
-        holder.textLPrice.setText(itemList.getLprice()+"원");
+        //천단위 마다 ,(콤마)를 찍기 위해 Long으로 변환 후 String format으로 다시 변환함.
+        lprice = Long.parseLong(itemList.getLprice());
+        holder.textLPrice.setText(String.format("%,d",lprice)+"원");
         Glide.with(context).load(itemList.getImage()).into(holder.imageProducts);
         holder.textMallName.setText(itemList.getMallName());
 

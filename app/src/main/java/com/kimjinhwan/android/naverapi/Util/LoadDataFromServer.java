@@ -39,6 +39,7 @@ public class LoadDataFromServer extends Thread {
     TextView responseText, textLowPrice, textQueryTime;
     ListTypeAdapter listTypeAdapter;
 
+
     public static long lowestPrice = 2000000000;
 
     public LoadDataFromServer(String queryString, TextView responseText, TextView textLowPrice, TextView textQueryTime, ListTypeAdapter listTypeAdapter) {
@@ -140,7 +141,7 @@ public class LoadDataFromServer extends Thread {
                     textLowPrice.setText("검색결과 없음");
 
                 } else {
-                    textLowPrice.setText(lowestPrice + "원");
+                    textLowPrice.setText(String.format("%,d",lowestPrice) + "원");
                 }
                     textLowPrice.setVisibility(View.VISIBLE);
 

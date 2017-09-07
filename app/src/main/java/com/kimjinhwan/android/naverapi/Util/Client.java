@@ -11,8 +11,8 @@ public class Client {
     public static ThreadLocal<String> SERVER_URL = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
-            return "https://openapi.naver.com/v1/search/shop?display=" + SEE_RESULT + "&query=";
+            return "https://openapi.naver.com/v1/search/shop?display=" + ITEM_VALUE + "&query=";
         }
     };
-    public static int SEE_RESULT = 20;
+    public static int ITEM_VALUE = 20;
 }

@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,7 +26,7 @@ import com.kimjinhwan.android.naverapi.Util.LoadDataFromServer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.kimjinhwan.android.naverapi.Util.Client.SEE_RESULT;
+import static com.kimjinhwan.android.naverapi.Util.Client.ITEM_VALUE;
 import static com.kimjinhwan.android.naverapi.Util.LoadDataFromServer.lowestPrice;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -68,8 +67,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                SEE_RESULT = viewItem[i];
-                Log.e("see_result===", SEE_RESULT+"");
+                ITEM_VALUE = viewItem[i];
+                Log.e("see_result===", ITEM_VALUE +"");
+                goSearch();
             }
 
             @Override

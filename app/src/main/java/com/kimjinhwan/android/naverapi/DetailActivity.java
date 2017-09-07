@@ -29,6 +29,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     Button btnGoBuy;
     Items itemList;
     Uri uri = null;
+    long lowPrice;
 
 
     @Override
@@ -50,6 +51,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void loadDataFromList() {
         Intent intent = getIntent();
         itemList = (Items) intent.getSerializableExtra("itemList");
+        lowPrice = Long.parseLong(itemList.getLprice());
         uri = Uri.parse(itemList.getLink());
     }
 
@@ -66,7 +68,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void setData() {
         Glide.with(this).load(itemList.getImage()).into(imageDetail);
         txtTitleDetail.setText(itemList.getTitle());
-        txtLPriceDetail.setText(itemList.getLprice());
+        txtLPriceDetail.setText(String.format("%,d",lowPrice)+"원");
 
     }
 
