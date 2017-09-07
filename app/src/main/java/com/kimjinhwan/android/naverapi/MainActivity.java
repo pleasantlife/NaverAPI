@@ -1,5 +1,6 @@
 package com.kimjinhwan.android.naverapi;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,16 +10,17 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kimjinhwan.android.naverapi.Adapter.ListTypeAdapter;
 import com.kimjinhwan.android.naverapi.Util.Items;
 import com.kimjinhwan.android.naverapi.Util.LoadDataFromServer;
 
@@ -39,7 +41,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Spinner spinner;
 
     RecyclerView recyclerView;
-    AdapterRecycler adapter;
+    ListTypeAdapter listTypeAdapter;
+
+
+    public static int SET_VIEW_TYPE = 1111;
+    public static int SET_VIEW_LINEAR = 1111;
+    public static int SET_VIEW_GRID = 2222;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         initView();
         itemList = new ArrayList<>();
-        adapter = new AdapterRecycler(this);
-        recyclerView.setAdapter(adapter);
+        listTypeAdapter = new ListTypeAdapter(this);
+        recyclerView.setAdapter(listTypeAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         pressEnterkey();
 
@@ -93,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
                 if(keyCode == keyEvent.KEYCODE_ENTER){
                     goSearch();
+                    hideKeyboard();
                     return true;
                 }
                 return false;
@@ -105,11 +114,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch(view.getId()){
             case R.id.btnSearch:
                 goSearch();
+                hideKeyboard();
                 break;
             case R.id.setGrid:
+                SET_VIEW_TYPE = SET_VIEW_GRID;
                 recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
                 break;
             case R.id.setLinear:
+                SET_VIEW_TYPE = SET_VIEW_LINEAR;
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 break;
         }
@@ -121,10 +133,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(queryString.equals("")){
             Toast.makeText(MainActivity.this, "검색어를 입력하세요", Toast.LENGTH_SHORT).show();
         } else {
-            LoadDataFromServer loadData = new LoadDataFromServer(queryString, responseText, textLowPrice, textQueryTime, adapter);
+            LoadDataFromServer loadData = new LoadDataFromServer(queryString, responseText, textLowPrice, textQueryTime, listTypeAdapter);
             loadData.start();
-            adapter.notifyDataSetChanged();
+            listTypeAdapter.notifyDataSetChanged();
         }
+    }
+
+    //엔터키를 누르고 나면(혹은 상품 검색 버튼을 누르면) InputMethodManage를 통해 키보드를 숨김.
+    public void hideKeyboard(){
+        InputMethodManager immanager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        immanager.hideSoftInputFromWindow(query.getWindowToken(), 0);
     }
 }
 

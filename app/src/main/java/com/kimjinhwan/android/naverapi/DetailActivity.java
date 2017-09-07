@@ -14,16 +14,21 @@ import com.bumptech.glide.Glide;
 import com.kimjinhwan.android.naverapi.Util.Items;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DetailActivity extends AppCompatActivity {
+import static android.content.Intent.ACTION_VIEW;
+
+public class DetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     ImageView imageDetail;
     TextView txtTitleDetail, txtLPriceDetail;
     Button btnGoBuy;
-    Items itemForDetail = new Items();
-
-
+    Items itemList;
+    Uri uri = null;
 
 
     @Override
@@ -33,44 +38,49 @@ public class DetailActivity extends AppCompatActivity {
 
         initView();
         loadDataFromList();
-        Log.e("itemSize", itemForDetail.getMallName());
-        Log.e("lowPrice===", itemForDetail.getLprice());
+        Log.e("mallName===", itemList.getMallName());
+        Log.e("lowPrice===", itemList.getLprice());
         //Log.e("link=====", itemForDetail.getLink());
 
         setData();
 
     }
 
-    private void initView(){
+    //intent를 통해 serialize 된 Items 데이터를 넘겨받음.
+    private void loadDataFromList() {
+        Intent intent = getIntent();
+        itemList = (Items) intent.getSerializableExtra("itemList");
+        uri = Uri.parse(itemList.getLink());
+    }
+
+    private void initView() {
         imageDetail = (ImageView) findViewById(R.id.imageDetail);
         txtTitleDetail = (TextView) findViewById(R.id.txtTitleDetail);
         txtLPriceDetail = (TextView) findViewById(R.id.txtLPriceDetail);
         btnGoBuy = (Button) findViewById(R.id.btnGoBuy);
-        btnGoBuy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                URL uri = null;
-                try {
-                    uri = new URL(itemForDetail.getLink());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                Log.e("uri===", uri+"");
-                //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(itemForDetail.getLink()));
-                //Intent chooser = Intent.createChooser(intent, "웹브라우저 선택");
-                //startActivity(chooser);
-            }
-        });
-    }
-
-    //intent를 통해 serialize 된 Items 데이터를 넘겨받음.
-    private void loadDataFromList(){
-        Intent intent = getIntent();
-        itemForDetail = (Items) intent.getSerializableExtra("itemList");
-    }
-
-    private void setData(){
-        Glide.with(this).load(itemForDetail.getImage()).into(imageDetail);
+        btnGoBuy.setOnClickListener(this);
 
     }
+
+
+    private void setData() {
+        Glide.with(this).load(itemList.getImage()).into(imageDetail);
+        txtTitleDetail.setText(itemList.getTitle());
+        txtLPriceDetail.setText(itemList.getLprice());
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()){
+            case R.id.btnGoBuy:
+                Intent linkIntent = new Intent();
+                linkIntent.setAction(Intent.ACTION_VIEW);
+                linkIntent.setData(uri);
+                startActivity(linkIntent);
+                break;
+        }
+
+    }
+
 }

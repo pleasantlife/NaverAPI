@@ -4,13 +4,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.kimjinhwan.android.naverapi.AdapterRecycler;
-import com.kimjinhwan.android.naverapi.R;
+import com.kimjinhwan.android.naverapi.Adapter.ListTypeAdapter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,10 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static com.kimjinhwan.android.naverapi.Util.Client.CLIENT_ID;
@@ -40,14 +37,14 @@ public class LoadDataFromServer extends Thread {
     List<Items> itemList;
     String queryString, buildDate;
     TextView responseText, textLowPrice, textQueryTime;
-    AdapterRecycler adapterRecycler;
+    ListTypeAdapter listTypeAdapter;
 
     public static long lowestPrice = 2000000000;
 
-    public LoadDataFromServer(String queryString, TextView responseText, TextView textLowPrice, TextView textQueryTime, AdapterRecycler adapterRecycler) {
+    public LoadDataFromServer(String queryString, TextView responseText, TextView textLowPrice, TextView textQueryTime, ListTypeAdapter listTypeAdapter) {
         this.queryString = queryString;
         this.responseText = responseText;
-        this.adapterRecycler = adapterRecycler;
+        this.listTypeAdapter = listTypeAdapter;
         this.textLowPrice = textLowPrice;
         this.textQueryTime = textQueryTime;
     }
@@ -118,8 +115,10 @@ public class LoadDataFromServer extends Thread {
                         item.setHprice(jsonObject.get("hprice").getAsString());
                         item.setMallName(jsonObject.get("mallName").getAsString());
                         item.setProductId(jsonObject.get("productId").getAsString());
+                        item.setLink(jsonObject.get("link").getAsString());
                         itemList.add(item);
-                        adapterRecycler.setData(itemList);
+                        listTypeAdapter.setData(itemList);
+
                     }
                     br.close();
 
@@ -133,12 +132,18 @@ public class LoadDataFromServer extends Thread {
             @Override
             protected void onPostExecute(String complete) {
                 super.onPostExecute(complete);
-                adapterRecycler.notifyDataSetChanged();
+                listTypeAdapter.notifyDataSetChanged();
                 String realDate = buildDate.replace("+0900","");
                 textQueryTime.setText(realDate);
                 textQueryTime.setVisibility(View.VISIBLE);
-                textLowPrice.setText(lowestPrice+"원");
-                textLowPrice.setVisibility(View.VISIBLE);
+                if(lowestPrice == 2000000000) {
+                    textLowPrice.setText("검색결과 없음");
+
+                } else {
+                    textLowPrice.setText(lowestPrice + "원");
+                }
+                    textLowPrice.setVisibility(View.VISIBLE);
+
                 Log.e("lowestPrice", lowestPrice+"");
             }
         }.execute();
