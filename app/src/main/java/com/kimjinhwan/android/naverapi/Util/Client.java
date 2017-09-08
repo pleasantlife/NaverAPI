@@ -14,5 +14,5 @@ public class Client {
             return "https://openapi.naver.com/v1/search/shop?display=" + ITEM_VALUE + "&query=";
         }
     };
-    public static int ITEM_VALUE = 20;
+    public static int ITEM_VALUE = 10;
 }

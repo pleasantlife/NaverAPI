@@ -1,6 +1,7 @@
 package com.kimjinhwan.android.naverapi;
 
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,9 +14,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,10 +42,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String queryString;
     List<Items> itemList;
     Spinner spinner;
+    Switch detailSwitch;
 
+    LinearLayout linearDetail;
     RecyclerView recyclerView;
     ListTypeAdapter listTypeAdapter;
 
+    long pressedTime = 0;
+    long seconds = 0;
 
     public static int SET_VIEW_TYPE = 1111;
     public static int SET_VIEW_LINEAR = 1111;
@@ -61,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setAdapter(listTypeAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         pressEnterkey();
+        switcher();
 
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, viewItem);
         spinner.setAdapter(adapter);
@@ -83,6 +92,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         textLowPrice = (TextView) findViewById(R.id.textLowPrice);
         textQueryTime = (TextView) findViewById(R.id.textQueryTime);
+        query = (EditText) findViewById(R.id.query);
+        detailSwitch = (Switch) findViewById(R.id.detailSwitch);
+        linearDetail = (LinearLayout) findViewById(R.id.linearDetail);
+        linearDetail.setVisibility(View.GONE);
         spinner = (Spinner) findViewById(R.id.spinner);
         btnSearch = (Button) findViewById(R.id.btnSearch);
         setGrid = (ImageView) findViewById(R.id.setGrid);
@@ -90,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSearch.setOnClickListener(this);
         setGrid.setOnClickListener(this);
         setLinear.setOnClickListener(this);
-        query = (EditText) findViewById(R.id.query);
+
     }
 
     //검색어 입력 후 엔터 누르면 바로 검색 되도록 함.
@@ -105,6 +118,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return true;
                 }
                 return false;
+            }
+        });
+    }
+
+    private void switcher(){
+        detailSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b == true){
+                    linearDetail.setVisibility(View.VISIBLE);
+                    detailSwitch.setText("감추기");
+                } else {
+                    linearDetail.setVisibility(View.GONE);
+                    detailSwitch.setText("보기");
+                }
             }
         });
     }
@@ -143,6 +171,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void hideKeyboard(){
         InputMethodManager immanager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         immanager.hideSoftInputFromWindow(query.getWindowToken(), 0);
+    }
+
+    //back버튼을 3초 내에 두 번 누르면 종료되도록 함.
+    @Override
+    public void onBackPressed() {
+
+        if(pressedTime == 0){
+            Toast.makeText(MainActivity.this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+            pressedTime = System.currentTimeMillis();
+        } else {
+            seconds = System.currentTimeMillis() - pressedTime;
+
+            if ( seconds > 3000 ) {
+                Toast.makeText(MainActivity.this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                pressedTime = 0;
+            } else {
+                super.onBackPressed();
+                finish();
+            }
+        }
     }
 }
 
