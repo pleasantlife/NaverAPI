@@ -19,8 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".DetailActivity">
-            <category android:name="android.intent.category.BROWSABLE"/>
+            <category android:name="android.intent.category.BROWSABLE" />
         </activity>
+        <activity android:name=".FavoriteActivity"></activity>
     </application>
 
 </manifest>

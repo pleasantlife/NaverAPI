@@ -1,6 +1,8 @@
 package com.kimjinhwan.android.naverapi;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +11,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     List<Items> itemList;
     Spinner spinner;
     Switch detailSwitch;
+    ProgressDialog dialog;
 
     LinearLayout linearDetail;
     RecyclerView recyclerView;
@@ -103,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSearch.setOnClickListener(this);
         setGrid.setOnClickListener(this);
         setLinear.setOnClickListener(this);
+        dialog = new ProgressDialog(this);
 
     }
 
@@ -156,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void goSearch(){
+        dialog.show();
         lowestPrice = 2000000000;
         queryString = query.getText().toString();
         if(queryString.equals("")){
@@ -165,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             loadData.start();
             listTypeAdapter.notifyDataSetChanged();
         }
+        dialog.dismiss();
     }
 
     //엔터키를 누르고 나면(혹은 상품 검색 버튼을 누르면) InputMethodManage를 통해 키보드를 숨김.
@@ -191,6 +199,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 finish();
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_item, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.goFavorite:
+                Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return true;
     }
 }
 
