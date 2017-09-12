@@ -7,4 +7,9 @@
         android:title="관심품목 보기"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/opensource"
+        android:title="오픈소스 라이선스"
+        app:showAsAction="never"/>
+
 </menu>

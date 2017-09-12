@@ -6,6 +6,8 @@ import java.io.Serializable;
  * Created by XPS on 2017-09-11.
  */
 
+// 사용자의 데이터베이스에 있는 아이템들을 꺼내서 이 클래스에 저장한다.
+
 public class FavoriteItem implements Serializable {
 
     private String title;

@@ -40,7 +40,7 @@ public class LoadDataFromServer extends Thread {
     ListTypeAdapter listTypeAdapter;
 
 
-    public static long lowestPrice = 2000000000;
+    public static long lowestPrice = 2147483647;
 
     public LoadDataFromServer(String queryString, TextView responseText, TextView textLowPrice, TextView textQueryTime, ListTypeAdapter listTypeAdapter) {
         this.queryString = queryString;
@@ -59,12 +59,10 @@ public class LoadDataFromServer extends Thread {
             @Override
             protected String doInBackground(Void... voids) {
                 String text = null;
-                String displayValue = null;
                 itemList = new ArrayList<>();
                 try {
                     //네이버에서 검색어를 반드시 UTF-8로 인코딩할 것을 명시함.
                     text = URLEncoder.encode(queryString, "UTF-8");
-                    //displayValue = URLEncoder.encode("display="+20, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -137,7 +135,7 @@ public class LoadDataFromServer extends Thread {
                 String realDate = buildDate.replace("+0900","");
                 textQueryTime.setText(realDate);
                 textQueryTime.setVisibility(View.VISIBLE);
-                if(lowestPrice == 2000000000) {
+                if(lowestPrice == 2147483647) {
                     textLowPrice.setText("검색결과 없음");
 
                 } else {

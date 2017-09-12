@@ -3,7 +3,6 @@ package com.kimjinhwan.android.naverapi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -41,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     TextView responseText, textQueryTime, textLowPrice;
     Button btnSearch;
-    ImageView setGrid, setLinear;
     EditText query;
     String queryString;
     List<Items> itemList;
@@ -103,11 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         linearDetail.setVisibility(View.GONE);
         spinner = (Spinner) findViewById(R.id.spinner);
         btnSearch = (Button) findViewById(R.id.btnSearch);
-        setGrid = (ImageView) findViewById(R.id.setGrid);
-        setLinear = (ImageView) findViewById(R.id.setLinear);
         btnSearch.setOnClickListener(this);
-        setGrid.setOnClickListener(this);
-        setLinear.setOnClickListener(this);
         dialog = new ProgressDialog(this);
 
     }
@@ -149,14 +143,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnSearch:
                 goSearch();
                 hideKeyboard();
-                break;
-            case R.id.setGrid:
-                SET_VIEW_TYPE = SET_VIEW_GRID;
-                recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-                break;
-            case R.id.setLinear:
-                SET_VIEW_TYPE = SET_VIEW_LINEAR;
-                recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 break;
         }
     }
@@ -203,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_item, menu);
+        getMenuInflater().inflate(R.menu.menu_item_main, menu);
         return true;
     }
 
@@ -211,9 +197,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.goFavorite:
-                Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
-                startActivity(intent);
+                Intent favoriteIntent = new Intent(MainActivity.this, FavoriteActivity.class);
+                startActivity(favoriteIntent);
                 break;
+            case R.id.opensource:
+                Intent openSourceIntent = new Intent(MainActivity.this, OpenSourceActivity.class);
+                startActivity(openSourceIntent);
         }
         return true;
     }

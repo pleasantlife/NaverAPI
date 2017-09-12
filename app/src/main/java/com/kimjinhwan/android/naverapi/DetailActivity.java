@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.kimjinhwan.android.naverapi.Util.DBHelper;
@@ -88,13 +89,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 helper.getWritableDatabase();
                 createDatabase();
                 insertData(itemList);
+                Toast.makeText(this, "관심항목에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
+
+    // 관심상품을 저장하기 위한 데이터베이스를 생성하거나 연다.
     public void createDatabase(){
         database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
     }
 
+    // 현재 보고 있는 상세아이템을 데이터베이스에 저장한다.
     public void insertData(Items itemList){
         String sql = " INSERT INTO " + TABLE_NAME + " (PRODUCTNAME, IMAGEURL, LOWPRICE, MALLNAME, LINK) VALUES ('"
                      + itemList.getTitle() + "', '" + itemList.getImage() + "', '" + itemList.getLprice() + "', '" + itemList.getMallName() + "', '" + itemList.getLink() + "')" + ";";

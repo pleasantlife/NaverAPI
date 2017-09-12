@@ -54,7 +54,6 @@ public class ListTypeAdapter extends RecyclerView.Adapter<ListTypeAdapter.Holder
         holder.textLPrice.setText(String.format("%,d",lprice)+"원");
         Glide.with(context).load(itemList.getImage()).into(holder.imageProducts);
         holder.textMallName.setText(itemList.getMallName());
-
     }
 
     @Override
@@ -69,7 +68,6 @@ public class ListTypeAdapter extends RecyclerView.Adapter<ListTypeAdapter.Holder
         int position;
         public Holder(View itemView) {
             super(itemView);
-
             textLPrice = itemView.findViewById(R.id.textLPrice);
             imageProducts = itemView.findViewById(R.id.imageProduct);
             textTitle = itemView.findViewById(R.id.textTitle);

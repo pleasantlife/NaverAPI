@@ -6,6 +6,8 @@ import java.io.Serializable;
  * Created by XPS on 2017-09-05.
  */
 
+// 네이버 서버로 부터 받아온 json 데이터를 이 클래스에 저장한다.
+
 public class Items implements Serializable{
 
         private String title;
