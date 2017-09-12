@@ -16,6 +16,10 @@ import android.widget.Toast;
 
 import com.kimjinhwan.android.naverapi.Adapter.FavoriteAdapter;
 import com.kimjinhwan.android.naverapi.Util.DBHelper;
+import com.kimjinhwan.android.naverapi.Util.FavoriteItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_NAME;
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.TABLE_NAME;
@@ -26,7 +30,6 @@ public class FavoriteActivity extends AppCompatActivity {
     FavoriteAdapter favoriteAdapter;
 
     SQLiteDatabase database;
-    DBHelper helper;
 
 
     @Override
@@ -57,27 +60,27 @@ public class FavoriteActivity extends AppCompatActivity {
             case R.id.deleteFavorite:
                 break;
             case R.id.deleteFavoriteAll:
-                AlertDialog.OnClickListener positiveListener = new AlertDialog.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        database = SQLiteDatabase.openOrCreateDatabase("data/data/" + FavoriteActivity.this.getApplicationContext().getPackageName() + "/databases//" + DATABASE_NAME, null);
-                        database.execSQL("DELETE FROM " + TABLE_NAME);
-                        favoriteAdapter.notifyDataSetChanged();
-                        Toast.makeText(FavoriteActivity.this, "관심 항목이 모두 삭제 되었습니다.", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(FavoriteActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                };
+                    AlertDialog.OnClickListener positiveListener = new AlertDialog.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            database = SQLiteDatabase.openOrCreateDatabase("data/data/" + FavoriteActivity.this.getApplicationContext().getPackageName() + "/databases//" + DATABASE_NAME, null);
+                            database.execSQL("DELETE FROM " + TABLE_NAME);
+                            favoriteAdapter.notifyDataSetChanged();
+                            Toast.makeText(FavoriteActivity.this, "관심 항목이 모두 삭제 되었습니다.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(FavoriteActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
+                    };
 
-                AlertDialog.OnClickListener negativeListener = new AlertDialog.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                };
+                    AlertDialog.OnClickListener negativeListener = new AlertDialog.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    };
 
-               AlertDialog.Builder dialog = new AlertDialog.Builder(this).setMessage("모든 관심 항목을 삭제 하시겠습니까?").setPositiveButton("네", positiveListener).setNegativeButton("아니오", negativeListener);
-                dialog.show();
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(this).setMessage("모든 관심 항목을 삭제 하시겠습니까?").setPositiveButton("네", positiveListener).setNegativeButton("아니오", negativeListener);
+                    dialog.show();
                 break;
         }
         return true;

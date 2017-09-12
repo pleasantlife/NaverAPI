@@ -60,7 +60,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         imageDetail = (ImageView) findViewById(R.id.imageDetail);
         txtTitleDetail = (TextView) findViewById(R.id.txtTitleDetail);
         txtLPriceDetail = (TextView) findViewById(R.id.txtLPriceDetail);
-        btnGoBuy = (Button) findViewById(R.id.btnGoBuy);
+        btnGoBuy = (Button) findViewById(R.id.btnGoBuyFavorite);
         btnFavorite = (Button) findViewById(R.id.btnFavorite);
         btnGoBuy.setOnClickListener(this);
         btnFavorite.setOnClickListener(this);
@@ -78,7 +78,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         switch(view.getId()){
-            case R.id.btnGoBuy:
+            case R.id.btnGoBuyFavorite:
                 Intent linkIntent = new Intent();
                 linkIntent.setAction(Intent.ACTION_VIEW);
                 linkIntent.setData(uri);

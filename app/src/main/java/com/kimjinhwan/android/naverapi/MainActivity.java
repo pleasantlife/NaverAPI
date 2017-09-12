@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void goSearch(){
         dialog.show();
-        lowestPrice = 2000000000;
+        lowestPrice = 2147483647;
         queryString = query.getText().toString();
         if(queryString.equals("")){
             Toast.makeText(MainActivity.this, "검색어를 입력하세요", Toast.LENGTH_SHORT).show();

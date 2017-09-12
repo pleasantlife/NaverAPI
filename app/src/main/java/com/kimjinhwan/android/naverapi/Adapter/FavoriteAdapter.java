@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.kimjinhwan.android.naverapi.DetailActivity;
+import com.kimjinhwan.android.naverapi.DetailFavoriteActivity;
 import com.kimjinhwan.android.naverapi.R;
 import com.kimjinhwan.android.naverapi.Util.FavoriteItem;
 
@@ -50,6 +51,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Holder
         if (cursor != null && cursor.moveToFirst()) {
             while(!cursor.isAfterLast()) {
                 itemList = new FavoriteItem();
+                itemList.setId(cursor.getInt(cursor.getColumnIndex("ID")));
                 itemList.setTitle(cursor.getString(cursor.getColumnIndex("PRODUCTNAME")));
                 itemList.setLink(cursor.getString(cursor.getColumnIndex("LINK")));
                 itemList.setImage(cursor.getString(cursor.getColumnIndex("IMAGEURL")));
@@ -107,12 +109,12 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Holder
                 @Override
                 public void onClick(View view) {
                     //현재 아이템에 해당하는 Item클래스의 변수와 그 값을 전부 intent로 보냄.
-                    Intent intent = new Intent(context, DetailActivity.class);
+                    Intent intent = new Intent(context, DetailFavoriteActivity.class);
                     intent.putExtra("position", position);
                     //여기에서 items.get(position)이 아닌 itemList를 보내면 holder의 position 값과 일치하는 데이터를 가져온다!!! 조심!!!
-                    //intent.putExtra("itemList", items.get(position));
+                    intent.putExtra("itemList", favoriteItemList.get(position));
                     Log.e("position===", position+"");
-                    Log.e("itemListForDetail===", favoriteItemList.get(position)+"");
+                    Log.e("itemListForFavorite===", favoriteItemList.get(position)+"");
                     context.startActivity(intent);
                 }
             });

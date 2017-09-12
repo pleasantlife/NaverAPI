@@ -10,6 +10,8 @@ import java.io.Serializable;
 
 public class FavoriteItem implements Serializable {
 
+    private int id;
+
     private String title;
 
     private String hprice;
@@ -25,6 +27,16 @@ public class FavoriteItem implements Serializable {
     private String productId;
 
     private String mallName;
+
+    public int getId ()
+    {
+        return id;
+    }
+
+    public void setId (int id)
+    {
+        this.id = id;
+    }
 
     public String getTitle ()
     {
