@@ -5,11 +5,11 @@
     <item
         android:id="@+id/goFavorite"
         android:title="관심품목 보기"
-        app:showAsAction="never"/>
+        app:showAsAction="collapseActionView" />
 
     <item
         android:id="@+id/opensource"
         android:title="오픈소스 라이선스"
-        app:showAsAction="never"/>
+        app:showAsAction="collapseActionView" />
 
 </menu>

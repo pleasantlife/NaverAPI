@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kimjinhwan.android.naverapi.Adapter.FavoriteAdapter;
@@ -28,6 +29,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
     RecyclerView recyclerFavorite;
     FavoriteAdapter favoriteAdapter;
+    TextView txtNone, txtItemCount;
 
     SQLiteDatabase database;
 
@@ -38,14 +40,27 @@ public class FavoriteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_favorite);
 
         initView();
-        favoriteAdapter = new FavoriteAdapter(this);
-        recyclerFavorite.setAdapter(favoriteAdapter);
-        recyclerFavorite.setLayoutManager(new LinearLayoutManager(this));
+        setFavoriteAdapter();
 
     }
 
     private void initView(){
         recyclerFavorite = (RecyclerView) findViewById(R.id.recyclerFavorite);
+        txtNone = (TextView) findViewById(R.id.txtNone);
+        txtItemCount = (TextView) findViewById(R.id.txtItemCount);
+        txtItemCount.setVisibility(View.GONE);
+    }
+
+    private void setFavoriteAdapter(){
+        favoriteAdapter = new FavoriteAdapter(this);
+        recyclerFavorite.setAdapter(favoriteAdapter);
+        recyclerFavorite.setLayoutManager(new LinearLayoutManager(this));
+        //'관심항목'이 있을 경우 배경에 나오는 '관심 항목이 없습니다.' 문구를 보이지 않게 함.
+        if(favoriteAdapter.getItemCount() != 0){
+            txtNone.setVisibility(View.GONE);
+            txtItemCount.setVisibility(View.VISIBLE);
+        }
+        txtItemCount.setText(favoriteAdapter.getItemCount() + " 개");
     }
 
     @Override
@@ -60,6 +75,7 @@ public class FavoriteActivity extends AppCompatActivity {
             case R.id.deleteFavorite:
                 break;
             case R.id.deleteFavoriteAll:
+                if(favoriteAdapter.getItemCount() != 0) {
                     AlertDialog.OnClickListener positiveListener = new AlertDialog.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -81,6 +97,9 @@ public class FavoriteActivity extends AppCompatActivity {
 
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this).setMessage("모든 관심 항목을 삭제 하시겠습니까?").setPositiveButton("네", positiveListener).setNegativeButton("아니오", negativeListener);
                     dialog.show();
+                } else {
+                    Toast.makeText(this, "등록된 관심항목이 없습니다.", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
         return true;
