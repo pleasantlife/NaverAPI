@@ -36,6 +36,7 @@ public class DetailFavoriteActivity extends AppCompatActivity implements View.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setElevation(0);
         setContentView(R.layout.activity_detail_favorite);
         adapter = new FavoriteAdapter(this);
         initView();

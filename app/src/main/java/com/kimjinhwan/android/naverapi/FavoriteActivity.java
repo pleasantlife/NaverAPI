@@ -39,6 +39,8 @@ public class FavoriteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
 
+        getSupportActionBar().setElevation(0);
+
         initView();
         setFavoriteAdapter();
 
@@ -72,8 +74,6 @@ public class FavoriteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
-            case R.id.deleteFavorite:
-                break;
             case R.id.deleteFavoriteAll:
                 if(favoriteAdapter.getItemCount() != 0) {
                     AlertDialog.OnClickListener positiveListener = new AlertDialog.OnClickListener() {

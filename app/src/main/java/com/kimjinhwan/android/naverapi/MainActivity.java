@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,10 +15,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -33,13 +31,14 @@ import com.kimjinhwan.android.naverapi.Util.LoadDataFromServer;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import static com.kimjinhwan.android.naverapi.Util.Client.ITEM_VALUE;
 import static com.kimjinhwan.android.naverapi.Util.LoadDataFromServer.lowestPrice;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView responseText, textQueryTime, textLowPrice;
-    Button btnSearch;
+    ImageButton btnSearch;
     EditText query;
     String queryString;
     List<Items> itemList;
@@ -54,25 +53,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     long pressedTime = 0;
     long seconds = 0;
 
-    public static int SET_VIEW_TYPE = 1111;
-    public static int SET_VIEW_LINEAR = 1111;
-    public static int SET_VIEW_GRID = 2222;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Integer[] viewItem = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+
+
+        //액션바의 그림자를 없앰.
+        getSupportActionBar().setElevation(0);
 
         initView();
+        setSpinner();
         itemList = new ArrayList<>();
         listTypeAdapter = new ListTypeAdapter(this);
         recyclerView.setAdapter(listTypeAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         pressEnterkey();
         switcher();
+    }
+
+    public void initView(){
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        textLowPrice = (TextView) findViewById(R.id.textLowPrice);
+        textQueryTime = (TextView) findViewById(R.id.textQueryTime);
+        query = (EditText) findViewById(R.id.query);
+        detailSwitch = (Switch) findViewById(R.id.detailSwitch);
+        linearDetail = (LinearLayout) findViewById(R.id.linearDetail);
+        linearDetail.setVisibility(View.GONE);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        btnSearch = (ImageButton) findViewById(R.id.btnSearch);
+        btnSearch.setOnClickListener(this);
+        dialog = new ProgressDialog(this);
+
+    }
+
+    public void setSpinner(){
+        final Integer[] viewItem = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
 
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, viewItem);
         spinner.setAdapter(adapter);
@@ -89,20 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-    }
 
-    public void initView(){
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        textLowPrice = (TextView) findViewById(R.id.textLowPrice);
-        textQueryTime = (TextView) findViewById(R.id.textQueryTime);
-        query = (EditText) findViewById(R.id.query);
-        detailSwitch = (Switch) findViewById(R.id.detailSwitch);
-        linearDetail = (LinearLayout) findViewById(R.id.linearDetail);
-        linearDetail.setVisibility(View.GONE);
-        spinner = (Spinner) findViewById(R.id.spinner);
-        btnSearch = (Button) findViewById(R.id.btnSearch);
-        btnSearch.setOnClickListener(this);
-        dialog = new ProgressDialog(this);
 
     }
 

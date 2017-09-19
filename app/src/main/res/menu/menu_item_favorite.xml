@@ -3,13 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/deleteFavorite"
-        android:title="항목 삭제하기"
-        app:showAsAction="never"
-        ></item>
-
-    <item
         android:id="@+id/deleteFavoriteAll"
         android:title="전체 삭제하기"
-        app:showAsAction="never"></item>
+        app:showAsAction="withText"></item>
 </menu>

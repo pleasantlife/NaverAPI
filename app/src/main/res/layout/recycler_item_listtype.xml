@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="150dp"
     android:background="#f1f1f1"
     android:orientation="vertical">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/eachItem"
         android:layout_width="0dp"
-        android:layout_height="130dp"
+        android:layout_height="140dp"
         android:background="#ffffff"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -52,6 +52,7 @@
             android:id="@+id/imageProduct"
             android:layout_width="100dp"
             android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
@@ -59,9 +60,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/ic_launcher"
             app:layout_constraintVertical_bias="0.0"
-            android:layout_marginBottom="8dp" />
+            app:srcCompat="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/textMallName"
