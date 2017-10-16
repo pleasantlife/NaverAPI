@@ -3,6 +3,9 @@ package com.kimjinhwan.android.naverapi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kimjinhwan.android.naverapi.Adapter.ListTypeAdapter;
+import com.kimjinhwan.android.naverapi.Util.DBHelper;
 import com.kimjinhwan.android.naverapi.Util.Items;
 import com.kimjinhwan.android.naverapi.Util.LoadDataFromServer;
 
@@ -33,6 +37,8 @@ import java.util.List;
 
 
 import static com.kimjinhwan.android.naverapi.Util.Client.ITEM_VALUE;
+import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_NAME;
+import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_VERSION;
 import static com.kimjinhwan.android.naverapi.Util.LoadDataFromServer.lowestPrice;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -49,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout linearDetail;
     RecyclerView recyclerView;
     ListTypeAdapter listTypeAdapter;
+
+    SQLiteDatabase database;
 
     long pressedTime = 0;
     long seconds = 0;
@@ -72,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         pressEnterkey();
         switcher();
+
+
+
     }
 
     public void initView(){
@@ -142,10 +153,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    private boolean networkCheck(){
+        boolean connect = true;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo == null){
+            connect = false;
+        }
+        return connect;
+    }
+
     @Override
     public void onClick(View view) {
         switch(view.getId()){
             case R.id.btnSearch:
+                networkCheck();
                 goSearch();
                 hideKeyboard();
                 break;
@@ -159,9 +181,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(queryString.equals("")){
             Toast.makeText(MainActivity.this, "검색어를 입력하세요", Toast.LENGTH_SHORT).show();
         } else {
-            LoadDataFromServer loadData = new LoadDataFromServer(queryString, responseText, textLowPrice, textQueryTime, listTypeAdapter);
-            loadData.start();
-            listTypeAdapter.notifyDataSetChanged();
+            if(networkCheck()) {
+                LoadDataFromServer loadData = new LoadDataFromServer(queryString, responseText, textLowPrice, textQueryTime, listTypeAdapter);
+                loadData.start();
+                listTypeAdapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(this, "인터넷에 연결되어 있지 않아 검색할 수 없습니다.", Toast.LENGTH_SHORT).show();
+            }
         }
         dialog.dismiss();
     }
@@ -202,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.goFavorite:
+                createDatabase();
                 Intent favoriteIntent = new Intent(MainActivity.this, FavoriteActivity.class);
                 startActivity(favoriteIntent);
                 break;
@@ -211,6 +238,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return true;
     }
+
+    public void createDatabase(){
+        database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
+        DBHelper helper = new DBHelper(this, DATABASE_NAME, null, DATABASE_VERSION);
+        helper.getWritableDatabase();
+    }
+
 }
 
 

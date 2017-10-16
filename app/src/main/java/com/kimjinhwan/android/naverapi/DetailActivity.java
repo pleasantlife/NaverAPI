@@ -96,7 +96,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    // 관심상품을 저장하기 위한 데이터베이스를 생성하거나 연다.
+   // 관심상품을 저장하기 위한 데이터베이스를 생성하거나 연다.
     public void createDatabase(){
         database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
     }

@@ -84,6 +84,8 @@ public class FavoriteActivity extends AppCompatActivity {
                             favoriteAdapter.notifyDataSetChanged();
                             Toast.makeText(FavoriteActivity.this, "관심 항목이 모두 삭제 되었습니다.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(FavoriteActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                         }
                     };
