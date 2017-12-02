@@ -30,12 +30,14 @@ public class ListTypeAdapter extends RecyclerView.Adapter<ListTypeAdapter.Holder
     Context context;
     long lprice;
 
-    public ListTypeAdapter(Context context){
+    public ListTypeAdapter(Context context, List<Items> items){
         this.context = context;
-    }
-    //setData를 통해 파싱한 Json 데이터를 넘겨 받는다. 이걸 하지 않으면 검색하기 전의 Items 클래스만 들어오기 떄문에 아무것도 뜨지 않는다.
-    public void setData(List<Items> items){
         this.items = items;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ListTypeAdapter extends RecyclerView.Adapter<ListTypeAdapter.Holder
         holder.setPosition(position);
         holder.textTitle.setText(itemList.getTitle());
         //천단위 마다 ,(콤마)를 찍기 위해 Long으로 변환 후 String format으로 다시 변환함.
-        lprice = Long.parseLong(itemList.getLprice());
+        lprice = itemList.getLprice();
         holder.textLPrice.setText(String.format("%,d",lprice)+"원");
         Glide.with(context).load(itemList.getImage()).into(holder.imageProducts);
         holder.textMallName.setText(itemList.getMallName());

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">네이버 쇼핑 검색기</string>
+    <string name="input_query">검색할 상품명을 입력해주세요</string>
 </resources>

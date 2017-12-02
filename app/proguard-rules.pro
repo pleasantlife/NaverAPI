@@ -15,6 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-dontwarn okio.**
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
@@ -23,3 +24,18 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+-dontwarn com.squareup.okhttp3.**
+#-keep class com.squareup.okhttp3.** { ; }
+-keep interface com.squareup.okhttp3.* { *; }
+-keep interface com.kimjinhwan.android.naverapi.Util.** {*;}
+-keep class com.kimjinhwan.android.naverapi.Util.** { *;}
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.ParametersAreNonnullByDefault
+-dontwarn javax.annotation.**
+
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions

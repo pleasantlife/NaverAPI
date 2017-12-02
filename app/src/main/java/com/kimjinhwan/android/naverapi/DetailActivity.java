@@ -43,7 +43,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         initView();
         loadDataFromList();
         Log.e("mallName===", itemList.getMallName());
-        Log.e("lowPrice===", itemList.getLprice());
+        Log.e("lowPrice===", itemList.getLprice()+"");
         //Log.e("link=====", itemForDetail.getLink());
         setData();
 
@@ -53,7 +53,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void loadDataFromList() {
         Intent intent = getIntent();
         itemList = (Items) intent.getSerializableExtra("itemList");
-        lowPrice = Long.parseLong(itemList.getLprice());
+        lowPrice = Long.parseLong(itemList.getLprice()+"");
         uri = Uri.parse(itemList.getLink());
     }
 

@@ -1,11 +1,11 @@
 package com.kimjinhwan.android.naverapi;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,27 +23,35 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kimjinhwan.android.naverapi.Adapter.ListTypeAdapter;
+import com.kimjinhwan.android.naverapi.Util.CustomLayoutManager;
 import com.kimjinhwan.android.naverapi.Util.DBHelper;
 import com.kimjinhwan.android.naverapi.Util.Items;
-import com.kimjinhwan.android.naverapi.Util.LoadDataFromServer;
+import com.kimjinhwan.android.naverapi.Util.NaverShoppingSearchService;
+import com.kimjinhwan.android.naverapi.Util.SearchDataList;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.kimjinhwan.android.naverapi.Util.Client.ITEM_VALUE;
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_NAME;
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_VERSION;
-import static com.kimjinhwan.android.naverapi.Util.LoadDataFromServer.lowestPrice;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener {
 
+
+    public static String NAVER_URL = "https://openapi.naver.com/v1/search/";
     TextView responseText, textQueryTime, textLowPrice;
     ImageButton btnSearch;
     EditText query;
@@ -50,17 +59,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     List<Items> itemList;
     Spinner spinner;
     Switch detailSwitch;
-    ProgressDialog dialog;
+    ProgressBar progressBar;
 
     LinearLayout linearDetail;
     RecyclerView recyclerView;
     ListTypeAdapter listTypeAdapter;
+    CustomLayoutManager customLayoutManager;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     SQLiteDatabase database;
 
     long pressedTime = 0;
     long seconds = 0;
-
+    int lprice;
+    int displayValue = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,18 +84,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //액션바의 그림자를 없앰.
         getSupportActionBar().setElevation(0);
-
         initView();
         setSpinner();
+        customLayoutManager = new CustomLayoutManager(this);
         itemList = new ArrayList<>();
-        listTypeAdapter = new ListTypeAdapter(this);
+        listTypeAdapter = new ListTypeAdapter(this, itemList);
         recyclerView.setAdapter(listTypeAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        pressEnterkey();
+        recyclerView.setLayoutManager(customLayoutManager);
         switcher();
-
-
-
+        pressEnterkey();
     }
 
     public void initView(){
@@ -96,8 +106,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinner = (Spinner) findViewById(R.id.spinner);
         btnSearch = (ImageButton) findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(this);
-        dialog = new ProgressDialog(this);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        //query.setOnEditorActionListener(this);
+    }
 
+    public void pressEnterkey() {
+        //setOnKeyListener가 키보드의 입력을 받음.
+        query.setOnKeyListener(new View.OnKeyListener() {
+            //OnKey would be called twice, one for a Down event and another one for an Up event. Please try to add a condition:
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+                if (keyCode == keyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    goSearch();
+                    hideKeyboard();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     public void setSpinner(){
@@ -108,11 +137,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ITEM_VALUE = viewItem[i];
-                Log.e("see_result===", ITEM_VALUE +"");
+                displayValue = viewItem[i];
                 goSearch();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
@@ -122,18 +149,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    //검색어 입력 후 엔터 누르면 바로 검색 되도록 함.
-    public void pressEnterkey(){
-        //setOnKeyListener가 키보드의 입력을 받음.
-        query.setOnKeyListener(new View.OnKeyListener() {
+
+    public void setRetrofit(String queryString){
+        progressBar.setVisibility(View.VISIBLE);
+        textLowPrice.setVisibility(View.INVISIBLE);
+        lprice = 2147483647;
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(NAVER_URL).addConverterFactory(GsonConverterFactory.create()).build();
+
+        NaverShoppingSearchService naverShoppingSearchService = retrofit.create(NaverShoppingSearchService.class);
+
+        Call<SearchDataList> searchDataListCall = naverShoppingSearchService.getSearchList(queryString, displayValue);
+
+        searchDataListCall.enqueue(new Callback<SearchDataList>() {
             @Override
-            public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-                if(keyCode == keyEvent.KEYCODE_ENTER){
-                    goSearch();
-                    hideKeyboard();
-                    return true;
+            public void onResponse(Call<SearchDataList> call, Response<SearchDataList> response) {
+                if(response.isSuccessful()) {
+                    for (Items itemResult : response.body().getItems()) {
+                        itemResult.setTitle(itemResult.getTitle().replace("<b>", ""));
+                        itemResult.setTitle(itemResult.getTitle().replace("</b>", ""));
+                        if (lprice >= itemResult.getLprice()) {
+                            lprice = itemResult.getLprice();
+                        }
+                        itemList.add(itemResult);
+                    }
+                    textLowPrice.setText(String.format("%,d",lprice) + "원");
+                    textLowPrice.setVisibility(View.VISIBLE);
+                    listTypeAdapter.notifyDataSetChanged();
+                    swipeRefreshLayout.setRefreshing(false);
+                    swipeRefreshLayout.setEnabled(true);
+                    progressBar.setVisibility(View.INVISIBLE);
+
+                } else {
+                    Log.e("error :", "error occured");
                 }
-                return false;
+            }
+
+            @Override
+            public void onFailure(Call<SearchDataList> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "에러가 발생했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -167,29 +220,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch(view.getId()){
             case R.id.btnSearch:
-                networkCheck();
                 goSearch();
                 hideKeyboard();
                 break;
         }
     }
 
+
     public void goSearch(){
-        dialog.show();
-        lowestPrice = 2147483647;
+        //검색데이터 가져오기!!
         queryString = query.getText().toString();
         if(queryString.equals("")){
             Toast.makeText(MainActivity.this, "검색어를 입력하세요", Toast.LENGTH_SHORT).show();
         } else {
             if(networkCheck()) {
-                LoadDataFromServer loadData = new LoadDataFromServer(queryString, responseText, textLowPrice, textQueryTime, listTypeAdapter);
-                loadData.start();
+                itemList.clear();
                 listTypeAdapter.notifyDataSetChanged();
+                setRetrofit(queryString);
+                progressBar.setVisibility(View.GONE);
             } else {
                 Toast.makeText(this, "인터넷에 연결되어 있지 않아 검색할 수 없습니다.", Toast.LENGTH_SHORT).show();
             }
         }
-        dialog.dismiss();
+
     }
 
     //엔터키를 누르고 나면(혹은 상품 검색 버튼을 누르면) InputMethodManage를 통해 키보드를 숨김.
@@ -244,6 +297,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         DBHelper helper = new DBHelper(this, DATABASE_NAME, null, DATABASE_VERSION);
         helper.getWritableDatabase();
     }
+
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setEnabled(false);
+        goSearch();
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        /**
+        int enterKey = 0;
+        if ((actionId == EditorInfo.IME_ACTION_DONE) || (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+            onRefresh();
+            return true;
+        }
+         */
+        return false;
+    }
+
 
 }
 

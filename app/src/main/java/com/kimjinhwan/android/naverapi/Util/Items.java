@@ -12,13 +12,13 @@ public class Items implements Serializable{
 
         private String title;
 
-        private String hprice;
+        private int hprice;
 
         private String link;
 
         private String image;
 
-        private String lprice;
+        private int lprice;
 
         private String productType;
 
@@ -36,12 +36,12 @@ public class Items implements Serializable{
             this.title = title;
         }
 
-        public String getHprice ()
+        public int getHprice ()
         {
             return hprice;
         }
 
-        public void setHprice (String hprice)
+        public void setHprice (int hprice)
         {
             this.hprice = hprice;
         }
@@ -66,12 +66,12 @@ public class Items implements Serializable{
             this.image = image;
         }
 
-        public String getLprice ()
+        public int getLprice ()
         {
             return lprice;
         }
 
-        public void setLprice (String lprice)
+        public void setLprice (int lprice)
         {
             this.lprice = lprice;
         }
