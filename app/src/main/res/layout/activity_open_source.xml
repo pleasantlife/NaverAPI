@@ -130,21 +130,22 @@
         android:id="@+id/linkRetrofit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:text="http://square.github.io/retrofit"
         android:textColor="#1B60A0"
-        app:layout_constraintTop_toBottomOf="@+id/titleRetrofit"
-        tools:layout_editor_absoluteX="8dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleRetrofit" />
 
     <TextView
         android:id="@+id/textRetrofit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:text="Copyright 2013 Square, Inc. \nApache License 2.0"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linkRetrofit" />
 

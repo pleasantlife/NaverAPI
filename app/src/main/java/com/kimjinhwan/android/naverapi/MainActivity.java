@@ -48,7 +48,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_NAME;
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_VERSION;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener{
 
 
     public static String NAVER_URL = "https://openapi.naver.com/v1/search/";
@@ -111,15 +111,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
         //query.setOnEditorActionListener(this);
-    }
-
-    public void pressEnterkey() {
-        //setOnKeyListener가 키보드의 입력을 받음.
         query.setOnKeyListener(new View.OnKeyListener() {
             //OnKey would be called twice, one for a Down event and another one for an Up event. Please try to add a condition:
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-                if (keyCode == keyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                if (keyCode == keyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_UP){
                     goSearch();
                     hideKeyboard();
                     return true;
@@ -127,6 +123,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
+
+    }
+
+    public void pressEnterkey() {
+        //setOnKeyListener가 키보드의 입력을 받음.
+
     }
 
     public void setSpinner(){
@@ -154,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         progressBar.setVisibility(View.VISIBLE);
         textLowPrice.setVisibility(View.INVISIBLE);
         lprice = 2147483647;
+        itemList.clear();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(NAVER_URL).addConverterFactory(GsonConverterFactory.create()).build();
 
         NaverShoppingSearchService naverShoppingSearchService = retrofit.create(NaverShoppingSearchService.class);
@@ -171,31 +174,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             lprice = itemResult.getLprice();
                         }
                         itemList.add(itemResult);
+                        listTypeAdapter.notifyDataSetChanged();
+                        swipeRefreshLayout.setRefreshing(false);
+                        swipeRefreshLayout.setEnabled(true);
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
-                    textLowPrice.setText(String.format("%,d",lprice) + "원");
+                    if(lprice != 2147483647) {
+                        textLowPrice.setText(String.format("%,d", lprice) + "원");
+                    } else {
+                        textLowPrice.setText("검색 결과 없음");
+                        Toast.makeText(MainActivity.this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
+                    }
                     textLowPrice.setVisibility(View.VISIBLE);
-                    listTypeAdapter.notifyDataSetChanged();
-                    swipeRefreshLayout.setRefreshing(false);
-                    swipeRefreshLayout.setEnabled(true);
-                    progressBar.setVisibility(View.INVISIBLE);
-
+                    Log.e("listItemPositon",
+                            customLayoutManager.findLastCompletelyVisibleItemPosition()+"");
                 } else {
                     Log.e("error :", "error occured");
                 }
             }
+
 
             @Override
             public void onFailure(Call<SearchDataList> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "에러가 발생했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
             }
         });
+
+
     }
 
     private void switcher(){
         detailSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b == true){
+                if(b){
                     linearDetail.setVisibility(View.VISIBLE);
                     detailSwitch.setText("감추기");
                 } else {
@@ -230,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void goSearch(){
         //검색데이터 가져오기!!
         queryString = query.getText().toString();
+        progressBar.setVisibility(View.VISIBLE);
         if(queryString.equals("")){
             Toast.makeText(MainActivity.this, "검색어를 입력하세요", Toast.LENGTH_SHORT).show();
         } else {
@@ -283,11 +296,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.goFavorite:
                 createDatabase();
                 Intent favoriteIntent = new Intent(MainActivity.this, FavoriteActivity.class);
-                startActivity(favoriteIntent);
+                if(favoriteIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(favoriteIntent);
+                } else {
+                    Toast.makeText(this, "다시 시도해 주세요.", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.opensource:
                 Intent openSourceIntent = new Intent(MainActivity.this, OpenSourceActivity.class);
-                startActivity(openSourceIntent);
+                if(openSourceIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(openSourceIntent);
+                } else {
+                    Toast.makeText(this, "다시 시도해 주세요.", Toast.LENGTH_SHORT).show();
+                }
         }
         return true;
     }
@@ -304,17 +325,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         goSearch();
     }
 
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        /**
-        int enterKey = 0;
-        if ((actionId == EditorInfo.IME_ACTION_DONE) || (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-            onRefresh();
-            return true;
-        }
-         */
-        return false;
-    }
 
 
 }

@@ -83,7 +83,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 Intent linkIntent = new Intent();
                 linkIntent.setAction(Intent.ACTION_VIEW);
                 linkIntent.setData(uri);
-                startActivity(linkIntent);
+                if(linkIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(linkIntent);
+                } else {
+                    Toast.makeText(DetailActivity.this, "다시 시도해 주세요.", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.btnFavorite:
                 helper = new DBHelper(DetailActivity.this, DATABASE_NAME, null, DATABASE_VERSION);

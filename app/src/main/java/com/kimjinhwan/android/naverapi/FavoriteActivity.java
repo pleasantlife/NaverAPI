@@ -86,7 +86,11 @@ public class FavoriteActivity extends AppCompatActivity {
                             Intent intent = new Intent(FavoriteActivity.this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
+                            if(intent.resolveActivity(getPackageManager()) != null) {
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(FavoriteActivity.this, "다시 시도해 주세요.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     };
 
