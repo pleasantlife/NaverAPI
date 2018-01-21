@@ -50,3 +50,14 @@
   - 액션바 상단에 메뉴 구현('관심품목보기', '오픈소스 라이선스', '아이템 삭제')
   - 오픈소스 라이선스에 대한 별도의 액티비티 추가(Gson, Glide, NaverAPI에 대한 라이선스 고지)
   - 디테일 액티비티 UI 개선(SQLite와의 연동 버튼 추가, 최저가와 상품명 표시 개선)
+  
+### 2017년 10월
+
+  - 네트워크 상태 체크(비행기모드일 경우 대응)
+  
+  
+### 2017년 12월 3일
+  - Retrofit2 사용 (기존 httpUrlConnection에 비해 코드수 대폭 감소, 추후 검색 로직 확장 계획에 필요하여 도입)
+  - SwipeRefreshLayout 적용 (같은 검색어로 새로고침할 경우 별도의 버튼을 누르지 않아도 됨.)
+  - IndexOutOfError 대응 (supportsPredictiveItemAnimations() 메소드를 overRide한 customLayoutManager 제작)
+  
