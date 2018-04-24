@@ -60,4 +60,6 @@
   - Retrofit2 사용 (기존 httpUrlConnection에 비해 코드수 대폭 감소, 추후 검색 로직 확장 계획에 필요하여 도입)
   - SwipeRefreshLayout 적용 (같은 검색어로 새로고침할 경우 별도의 버튼을 누르지 않아도 됨.)
   - IndexOutOfError 대응 (supportsPredictiveItemAnimations() 메소드를 overRide한 customLayoutManager 제작)
-  
+
+### 2018년 1월 21일
+  - 일부기기에서 DetailActivity.onclick을 수행하면서 발생하던 ActivityNotFoundException에러 대응.
