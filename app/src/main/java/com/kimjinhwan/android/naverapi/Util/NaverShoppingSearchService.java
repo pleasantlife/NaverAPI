@@ -16,5 +16,5 @@ public interface NaverShoppingSearchService {
             "X-Naver-Client-Secret: SszZOHXjYS"
     })
     @GET("shop")
-    Call<SearchDataList> getSearchList(@Query("query") String queryKey, @Query("display") int displayValue);
+    Call<SearchDataList> getSearchList(@Query("query") String queryKey, @Query("display") int displayValue, @Query("start") int start, @Query("sort") String sortType);
 }

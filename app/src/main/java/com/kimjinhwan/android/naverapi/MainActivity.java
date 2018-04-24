@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -37,6 +40,7 @@ import com.kimjinhwan.android.naverapi.Util.NaverShoppingSearchService;
 import com.kimjinhwan.android.naverapi.Util.SearchDataList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -52,14 +56,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     public static String NAVER_URL = "https://openapi.naver.com/v1/search/";
-    TextView responseText, textQueryTime, textLowPrice;
+
+    TextView textLowPrice;
     ImageButton btnSearch;
     EditText query;
     String queryString;
     List<Items> itemList;
-    Spinner spinner;
     Switch detailSwitch;
     ProgressBar progressBar;
+    RadioButton radioBtnSim, radioBtnPrice;
+    RadioGroup radioGroupSort;
 
     LinearLayout linearDetail;
     RecyclerView recyclerView;
@@ -74,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     long seconds = 0;
     int lprice;
     int displayValue = 10;
+    int startValue = 1;
+    String sortType = "sim";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,31 +93,88 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //액션바의 그림자를 없앰.
         getSupportActionBar().setElevation(0);
         initView();
-        setSpinner();
+        //setSpinner();
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         customLayoutManager = new CustomLayoutManager(this);
         itemList = new ArrayList<>();
         listTypeAdapter = new ListTypeAdapter(this, itemList);
         recyclerView.setAdapter(listTypeAdapter);
-        recyclerView.setLayoutManager(customLayoutManager);
-        switcher();
+        //recyclerView.setLayoutManager(customLayoutManager);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        //switcher();
         pressEnterkey();
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                Log.e("count", recyclerView.getLayoutManager().getItemCount()+"");
+                Log.e("lastVisible", linearLayoutManager.findLastVisibleItemPosition()+"");
+                int lastVisible = linearLayoutManager.findLastVisibleItemPosition();
+                if(lastVisible + 1 == itemList.size()){
+                    startValue = startValue + 10;
+                    setRetrofit(queryString);
+                }
+            }
+        });
     }
 
     public void initView(){
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         textLowPrice = (TextView) findViewById(R.id.textLowPrice);
-        textQueryTime = (TextView) findViewById(R.id.textQueryTime);
         query = (EditText) findViewById(R.id.query);
-        detailSwitch = (Switch) findViewById(R.id.detailSwitch);
-        linearDetail = (LinearLayout) findViewById(R.id.linearDetail);
-        linearDetail.setVisibility(View.GONE);
-        spinner = (Spinner) findViewById(R.id.spinner);
+
+        radioBtnPrice = (RadioButton) findViewById(R.id.radioBtnPrice);
+        radioBtnSim = (RadioButton) findViewById(R.id.radioBtnSim);
+        radioBtnSim.setChecked(true);
+        radioGroupSort = (RadioGroup) findViewById(R.id.radioGroupSort);
+        radioGroupSort.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch(checkedId){
+                    case R.id.radioBtnSim:
+                        Toast.makeText(MainActivity.this, "검색어와 유사한 물품을 검색합니다.", Toast.LENGTH_SHORT).show();
+                        sortType = "sim";
+                        clearData();
+                        setRetrofit(queryString);
+                        break;
+                    case R.id.radioBtnPrice:
+                        Toast.makeText(MainActivity.this, "최저가 순으로 검색합니다.", Toast.LENGTH_SHORT).show();
+                        sortType = "asc";
+                        clearData();
+                        setRetrofit(queryString);
+                        break;
+                }
+            }
+        });
+
         btnSearch = (ImageButton) findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(this);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(!query.getText().toString().isEmpty()){
+                    swipeRefreshLayout.setRefreshing(false);
+                    clearData();
+                    Toast.makeText(MainActivity.this, "다시 검색합니다.", Toast.LENGTH_SHORT).show();
+                    setRetrofit(queryString);
+                } else {
+                    swipeRefreshLayout.setRefreshing(false);
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this, "검색어를 입력하세요.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         //query.setOnEditorActionListener(this);
         query.setOnKeyListener(new View.OnKeyListener() {
             //OnKey would be called twice, one for a Down event and another one for an Up event. Please try to add a condition:
@@ -131,37 +196,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void setSpinner(){
-        final Integer[] viewItem = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, viewItem);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                displayValue = viewItem[i];
-                goSearch();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-
+    private void clearData(){
+        itemList.clear();
+        startValue = 1;
+        lprice = 2147483647;
     }
 
 
     public void setRetrofit(String queryString){
         progressBar.setVisibility(View.VISIBLE);
         textLowPrice.setVisibility(View.INVISIBLE);
-        lprice = 2147483647;
-        itemList.clear();
+
+        if(startValue == 1) {
+            itemList.clear();
+            lprice = 2147483647;
+        }
         Retrofit retrofit = new Retrofit.Builder().baseUrl(NAVER_URL).addConverterFactory(GsonConverterFactory.create()).build();
 
         NaverShoppingSearchService naverShoppingSearchService = retrofit.create(NaverShoppingSearchService.class);
 
-        Call<SearchDataList> searchDataListCall = naverShoppingSearchService.getSearchList(queryString, displayValue);
+        Call<SearchDataList> searchDataListCall = naverShoppingSearchService.getSearchList(queryString, displayValue, startValue, sortType);
 
         searchDataListCall.enqueue(new Callback<SearchDataList>() {
             @Override
@@ -189,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.e("listItemPositon",
                             customLayoutManager.findLastCompletelyVisibleItemPosition()+"");
                 } else {
-                    Log.e("error :", "error occured");
+                    //Log.e("error :", response.errorBody().toString()+"");
                 }
             }
 
@@ -203,20 +257,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void switcher(){
-        detailSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
-                    linearDetail.setVisibility(View.VISIBLE);
-                    detailSwitch.setText("감추기");
-                } else {
-                    linearDetail.setVisibility(View.GONE);
-                    detailSwitch.setText("보기");
-                }
-            }
-        });
-    }
 
     private boolean networkCheck(){
         boolean connect = true;
@@ -232,6 +272,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch(view.getId()){
             case R.id.btnSearch:
+                clearData();
                 goSearch();
                 hideKeyboard();
                 break;
