@@ -56,10 +56,14 @@
   - 네트워크 상태 체크(비행기모드일 경우 대응)
   
   
-### 2017년 12월 3일
+### 2017년 12월 3일 (메이저 업데이트! Ver 1.10)
   - Retrofit2 사용 (기존 httpUrlConnection에 비해 코드수 대폭 감소, 추후 검색 로직 확장 계획에 필요하여 도입)
   - SwipeRefreshLayout 적용 (같은 검색어로 새로고침할 경우 별도의 버튼을 누르지 않아도 됨.)
   - IndexOutOfError 대응 (supportsPredictiveItemAnimations() 메소드를 overRide한 customLayoutManager 제작)
 
 ### 2018년 1월 21일
   - 일부기기에서 DetailActivity.onclick을 수행하면서 발생하던 ActivityNotFoundException에러 대응.
+
+### 2018년 4월 24일 (메이저 업데이트! Ver 1.20 - 커밋에 1.10이라고 잘못씀..ㅠㅠ)
+  - 리사이클러뷰 무한 로딩 기능 구현 및 이에 따른 아이템 로딩 갯수 설정 제거
+  - 검색어 연관 순/ 최저가 순 정렬 라디오 버튼 추가 (기본은 연관순)
