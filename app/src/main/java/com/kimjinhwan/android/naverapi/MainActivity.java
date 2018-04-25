@@ -138,16 +138,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch(checkedId){
                     case R.id.radioBtnSim:
-                        Toast.makeText(MainActivity.this, "검색어와 유사한 물품을 검색합니다.", Toast.LENGTH_SHORT).show();
-                        sortType = "sim";
-                        clearData();
-                        setRetrofit(queryString);
+                        if(!query.getText().toString().isEmpty()) {
+                            Toast.makeText(MainActivity.this, "검색어와 유사한 물품을 검색합니다.", Toast.LENGTH_SHORT).show();
+                            sortType = "sim";
+                            clearData();
+                            setRetrofit(queryString);
+                        }
                         break;
                     case R.id.radioBtnPrice:
-                        Toast.makeText(MainActivity.this, "최저가 순으로 검색합니다.", Toast.LENGTH_SHORT).show();
-                        sortType = "asc";
-                        clearData();
-                        setRetrofit(queryString);
+                        if(!query.getText().toString().isEmpty()) {
+                            Toast.makeText(MainActivity.this, "최저가 순으로 검색합니다.", Toast.LENGTH_SHORT).show();
+                            sortType = "asc";
+                            clearData();
+                            setRetrofit(queryString);
+                        }
                         break;
                 }
             }
@@ -233,6 +237,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         swipeRefreshLayout.setEnabled(true);
                         progressBar.setVisibility(View.INVISIBLE);
                     }
+                    if(itemList.size() == 0){
+                        lprice = 2147483647;
+                        progressBar.setVisibility(View.GONE);
+                    }
                     if(lprice != 2147483647) {
                         textLowPrice.setText(String.format("%,d", lprice) + "원");
                     } else {
@@ -242,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     textLowPrice.setVisibility(View.VISIBLE);
                     Log.e("listItemPositon",
                             customLayoutManager.findLastCompletelyVisibleItemPosition()+"");
+                    progressBar.setVisibility(View.INVISIBLE);
                 } else {
                     //Log.e("error :", response.errorBody().toString()+"");
                 }
@@ -286,6 +295,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         progressBar.setVisibility(View.VISIBLE);
         if(queryString.equals("")){
             Toast.makeText(MainActivity.this, "검색어를 입력하세요", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
         } else {
             if(networkCheck()) {
                 itemList.clear();
