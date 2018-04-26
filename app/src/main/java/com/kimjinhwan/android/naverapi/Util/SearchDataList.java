@@ -13,9 +13,9 @@ public class SearchDataList {
     @SerializedName("items")
     private List<Items> items;
     private String lastBuildDate;
-    private String total;
-    private String start;
-    private String display;
+    private int total;
+    private int start;
+    private int display;
 
     public List<Items> getItems() {
         return items;
@@ -33,27 +33,27 @@ public class SearchDataList {
         this.lastBuildDate = lastBuildDate;
     }
 
-    public String getTotal() {
+    public int getTotal() {
         return total;
     }
 
-    public void setTotal(String total) {
+    public void setTotal(int total) {
         this.total = total;
     }
 
-    public String getStart() {
+    public int getStart() {
         return start;
     }
 
-    public void setStart(String start) {
+    public void setStart(int start) {
         this.start = start;
     }
 
-    public String getDisplay() {
+    public int getDisplay() {
         return display;
     }
 
-    public void setDisplay(String display) {
+    public void setDisplay(int display) {
         this.display = display;
     }
 }

@@ -7,7 +7,7 @@ android {
         applicationId "com.kimjinhwan.android.naverapi"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 7
+        versionCode 8
         versionName "1.22"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -39,4 +39,5 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
 }

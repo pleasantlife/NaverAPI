@@ -94,13 +94,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setElevation(0);
         initView();
         //setSpinner();
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         customLayoutManager = new CustomLayoutManager(this);
         itemList = new ArrayList<>();
         listTypeAdapter = new ListTypeAdapter(this, itemList);
         recyclerView.setAdapter(listTypeAdapter);
-        //recyclerView.setLayoutManager(customLayoutManager);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(customLayoutManager);
         //switcher();
         pressEnterkey();
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -114,9 +112,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 Log.e("count", recyclerView.getLayoutManager().getItemCount()+"");
-                Log.e("lastVisible", linearLayoutManager.findLastVisibleItemPosition()+"");
-                int lastVisible = linearLayoutManager.findLastVisibleItemPosition();
-                if(lastVisible + 1 == itemList.size()){
+                Log.e("lastVisible", customLayoutManager.findLastVisibleItemPosition()+"");
+                int lastVisible = customLayoutManager.findLastVisibleItemPosition();
+                /*if(lastVisible +1 == itemList.size()){
+                    startValue = startValue + 10;
+                    setRetrofit(queryString);
+                }*/
+                if(lastVisible == itemList.size()-1){
                     startValue = startValue + 10;
                     setRetrofit(queryString);
                 }
@@ -215,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             itemList.clear();
             lprice = 2147483647;
         }
+
         Retrofit retrofit = new Retrofit.Builder().baseUrl(NAVER_URL).addConverterFactory(GsonConverterFactory.create()).build();
 
         NaverShoppingSearchService naverShoppingSearchService = retrofit.create(NaverShoppingSearchService.class);
@@ -225,41 +228,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResponse(Call<SearchDataList> call, Response<SearchDataList> response) {
                 if(response.isSuccessful()) {
-                    for (Items itemResult : response.body().getItems()) {
-                        itemResult.setTitle(itemResult.getTitle().replace("<b>", ""));
-                        itemResult.setTitle(itemResult.getTitle().replace("</b>", ""));
-                        if (lprice >= itemResult.getLprice()) {
-                            lprice = itemResult.getLprice();
+                    if (response.body().getDisplay() != 0) {
+                        for (Items itemResult : response.body().getItems()) {
+                            itemResult.setTitle(itemResult.getTitle().replace("<b>", ""));
+                            itemResult.setTitle(itemResult.getTitle().replace("</b>", ""));
+                            if (lprice >= itemResult.getLprice()) {
+                                lprice = itemResult.getLprice();
+                            }
+                            itemList.add(itemResult);
+                            listTypeAdapter.notifyDataSetChanged();
+                            swipeRefreshLayout.setRefreshing(false);
+                            swipeRefreshLayout.setEnabled(true);
+                            progressBar.setVisibility(View.INVISIBLE);
                         }
-                        itemList.add(itemResult);
-                        listTypeAdapter.notifyDataSetChanged();
-                        swipeRefreshLayout.setRefreshing(false);
-                        swipeRefreshLayout.setEnabled(true);
+                        if (itemList.size() == 0) {
+                            lprice = 2147483647;
+                            progressBar.setVisibility(View.GONE);
+                        }
+                        if (lprice != 2147483647) {
+                            textLowPrice.setText(String.format("%,d", lprice) + "원");
+                        } else {
+                            textLowPrice.setText("검색 결과 없음");
+                            Toast.makeText(MainActivity.this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                        textLowPrice.setVisibility(View.VISIBLE);
+                        Log.e("listItemPositon",
+                                customLayoutManager.findLastCompletelyVisibleItemPosition() + "");
+                        progressBar.setVisibility(View.INVISIBLE);
+                    } else {
+                        Toast.makeText(MainActivity.this, "더 이상 불러올 아이템이 없습니다.", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);
                     }
-                    if(itemList.size() == 0){
-                        lprice = 2147483647;
-                        progressBar.setVisibility(View.GONE);
-                    }
-                    if(lprice != 2147483647) {
-                        textLowPrice.setText(String.format("%,d", lprice) + "원");
-                    } else {
-                        textLowPrice.setText("검색 결과 없음");
-                        Toast.makeText(MainActivity.this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                    textLowPrice.setVisibility(View.VISIBLE);
-                    Log.e("listItemPositon",
-                            customLayoutManager.findLastCompletelyVisibleItemPosition()+"");
-                    progressBar.setVisibility(View.INVISIBLE);
                 } else {
-                    //Log.e("error :", response.errorBody().toString()+"");
+
                 }
             }
 
 
             @Override
             public void onFailure(Call<SearchDataList> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "에러가 발생했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "에러가 발생했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
             }
         });
 
