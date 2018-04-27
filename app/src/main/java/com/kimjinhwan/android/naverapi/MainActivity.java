@@ -32,6 +32,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.kimjinhwan.android.naverapi.Adapter.ListTypeAdapter;
 import com.kimjinhwan.android.naverapi.Util.CustomLayoutManager;
 import com.kimjinhwan.android.naverapi.Util.DBHelper;
@@ -76,10 +78,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     SQLiteDatabase database;
 
+    RequestManager requestManager;
+
     long pressedTime = 0;
     long seconds = 0;
     int lprice;
-    int displayValue = 10;
+    int displayValue = 100;
     int startValue = 1;
     String sortType = "sim";
 
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        requestManager = Glide.with(this);
 
 
         //액션바의 그림자를 없앰.
@@ -96,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //setSpinner();
         customLayoutManager = new CustomLayoutManager(this);
         itemList = new ArrayList<>();
-        listTypeAdapter = new ListTypeAdapter(this, itemList);
+        listTypeAdapter = new ListTypeAdapter(this, itemList, requestManager);
         recyclerView.setAdapter(listTypeAdapter);
         recyclerView.setLayoutManager(customLayoutManager);
         //switcher();
@@ -119,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     setRetrofit(queryString);
                 }*/
                 if(lastVisible == itemList.size()-1){
-                    startValue = startValue + 10;
+                    startValue = startValue + 100;
                     setRetrofit(queryString);
                 }
             }
@@ -256,11 +261,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 customLayoutManager.findLastCompletelyVisibleItemPosition() + "");
                         progressBar.setVisibility(View.INVISIBLE);
                     } else {
-                        Toast.makeText(MainActivity.this, "더 이상 불러올 아이템이 없습니다.", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);
                     }
-                } else {
-
                 }
             }
 

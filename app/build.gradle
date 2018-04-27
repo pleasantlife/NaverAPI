@@ -7,8 +7,8 @@ android {
         applicationId "com.kimjinhwan.android.naverapi"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 8
-        versionName "1.22"
+        versionCode 9
+        versionName "1.23"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

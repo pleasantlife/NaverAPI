@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.kimjinhwan.android.naverapi.DetailActivity;
 import com.kimjinhwan.android.naverapi.R;
 import com.kimjinhwan.android.naverapi.Util.Items;
@@ -28,11 +29,13 @@ public class ListTypeAdapter extends RecyclerView.Adapter<ListTypeAdapter.Holder
     List<Items> items = new ArrayList<>();
     Items itemList;
     Context context;
+    RequestManager requestManager;
     long lprice;
 
-    public ListTypeAdapter(Context context, List<Items> items){
+    public ListTypeAdapter(Context context, List<Items> items, RequestManager requestManager){
         this.context = context;
         this.items = items;
+        this.requestManager = requestManager;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class ListTypeAdapter extends RecyclerView.Adapter<ListTypeAdapter.Holder
         //천단위 마다 ,(콤마)를 찍기 위해 Long으로 변환 후 String format으로 다시 변환함.
         lprice = itemList.getLprice();
         holder.textLPrice.setText(String.format("%,d",lprice)+"원");
-        Glide.with(context).load(itemList.getImage()).into(holder.imageProducts);
+        requestManager.load(itemList.getImage()).into(holder.imageProducts);
         holder.textMallName.setText(itemList.getMallName());
     }
 
