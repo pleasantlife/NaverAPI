@@ -2,6 +2,8 @@ package com.kimjinhwan.android.naverapi.Util;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 /**
  * Created by XPS on 2017-12-02.
@@ -17,5 +19,14 @@ public class CustomLayoutManager extends LinearLayoutManager {
     @Override
     public boolean supportsPredictiveItemAnimations() {
         return false;
+    }
+
+    @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        try {
+            super.onLayoutChildren(recycler, state);
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("Error : ", " In RecyclerView ViewHolder");
+        }
     }
 }
