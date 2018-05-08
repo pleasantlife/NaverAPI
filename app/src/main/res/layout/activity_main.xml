@@ -165,7 +165,10 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_weight="1"
+            android:buttonTint="#8B8B8B"
             android:text="유사도순"
+            android:textColor="#8B8B8B"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/textView7"
             app:layout_constraintEnd_toStartOf="@+id/radioBtnPrice"
             app:layout_constraintTop_toTopOf="@+id/textView7" />
@@ -177,7 +180,10 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_weight="1"
+            android:buttonTint="#8B8B8B"
             android:text="최저가순"
+            android:textColor="#8B8B8B"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/radioBtnSim"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/radioBtnSim" />

@@ -45,10 +45,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_NAME;
@@ -146,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 switch(checkedId){
                     case R.id.radioBtnSim:
                         if(!query.getText().toString().isEmpty()) {
+                            recyclerView.scrollToPosition(0);
                             Toast.makeText(MainActivity.this, "검색어와 유사한 물품을 검색합니다.", Toast.LENGTH_SHORT).show();
                             sortType = "sim";
                             clearData();
@@ -154,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     case R.id.radioBtnPrice:
                         if(!query.getText().toString().isEmpty()) {
+                            recyclerView.scrollToPosition(0);
                             Toast.makeText(MainActivity.this, "최저가 순으로 검색합니다.", Toast.LENGTH_SHORT).show();
                             sortType = "asc";
                             clearData();
@@ -213,6 +223,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lprice = 2147483647;
     }
 
+    private HttpLoggingInterceptor loggingInterceptor(){
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                Log.e("okhttp : ", message+"");
+            }
+        });
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        return httpLoggingInterceptor;
+    }
+
 
     public void setRetrofit(String queryString){
         progressBar.setVisibility(View.VISIBLE);
@@ -223,11 +244,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             lprice = 2147483647;
         }
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(NAVER_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        OkHttpClient client = new OkHttpClient.Builder().addNetworkInterceptor(loggingInterceptor()).build();
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(NAVER_URL).client(client).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).addConverterFactory(GsonConverterFactory.create()).build();
 
         NaverShoppingSearchService naverShoppingSearchService = retrofit.create(NaverShoppingSearchService.class);
 
-        Call<SearchDataList> searchDataListCall = naverShoppingSearchService.getSearchList(queryString, displayValue, startValue, sortType);
+        Observable<SearchDataList> getSearchData = naverShoppingSearchService.getSearchDataList(queryString, displayValue, startValue, sortType);
+        getSearchData.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new Observer<SearchDataList>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(SearchDataList searchDataList) {
+                for(Items itemResult : searchDataList.getItems()){
+                    itemResult.setTitle(itemResult.getTitle().replace("<b>", ""));
+                    itemResult.setTitle(itemResult.getTitle().replace("</b>", ""));
+                    if (lprice >= itemResult.getLprice()) {
+                        lprice = itemResult.getLprice();
+                    }
+                    itemList.add(itemResult);
+
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e("error data", e.getLocalizedMessage()+"");
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onComplete() {
+                listTypeAdapter.notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
+                swipeRefreshLayout.setEnabled(true);
+                progressBar.setVisibility(View.INVISIBLE);
+                if (itemList.size() == 0) {
+                    lprice = 2147483647;
+                    progressBar.setVisibility(View.GONE);
+                    textLowPrice.setText("검색 결과 없음");
+                    Toast.makeText(MainActivity.this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+                if (lprice != 2147483647) {
+                    textLowPrice.setText(String.format("%,d", lprice) + "원");
+                } else {
+                    textLowPrice.setText("검색 결과 없음");
+                    Toast.makeText(MainActivity.this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+                textLowPrice.setVisibility(View.VISIBLE);
+                Log.e("listItemPositon",
+                        customLayoutManager.findLastCompletelyVisibleItemPosition() + "");
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+
+       /* Call<SearchDataList> searchDataListCall = naverShoppingSearchService.getSearchList(queryString, displayValue, startValue, sortType);
 
         searchDataListCall.enqueue(new Callback<SearchDataList>() {
             @Override
@@ -249,6 +323,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (itemList.size() == 0) {
                             lprice = 2147483647;
                             progressBar.setVisibility(View.GONE);
+                            textLowPrice.setText("검색 결과 없음");
+                            Toast.makeText(MainActivity.this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
                         }
                         if (lprice != 2147483647) {
                             textLowPrice.setText(String.format("%,d", lprice) + "원");
@@ -269,9 +345,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<SearchDataList> call, Throwable t) {
-                //Toast.makeText(MainActivity.this, "에러가 발생했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "에러가 발생했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show();
+                Log.e("error", t.getMessage()+"");
             }
-        });
+        });*/
 
 
     }
