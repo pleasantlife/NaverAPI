@@ -72,12 +72,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText query;
     String queryString;
     List<Items> itemList;
-    Switch detailSwitch;
     ProgressBar progressBar;
     RadioButton radioBtnSim, radioBtnPrice;
     RadioGroup radioGroupSort;
 
-    LinearLayout linearDetail;
     RecyclerView recyclerView;
     ListTypeAdapter listTypeAdapter;
     CustomLayoutManager customLayoutManager;
@@ -385,7 +383,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             progressBar.setVisibility(View.GONE);
         } else {
             if(networkCheck()) {
-                itemList.clear();
+                //itemList.clear();
+                clearData();
                 listTypeAdapter.notifyDataSetChanged();
                 setRetrofit(queryString);
                 progressBar.setVisibility(View.GONE);

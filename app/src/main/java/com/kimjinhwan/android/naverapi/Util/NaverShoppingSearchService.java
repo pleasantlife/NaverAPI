@@ -13,12 +13,12 @@ import retrofit2.http.Query;
 
 public interface NaverShoppingSearchService {
 
-    @Headers({
+    /*@Headers({
             "X-Naver-Client-Id: OzYyCwp8a0JpBJiKXycC",
             "X-Naver-Client-Secret: SszZOHXjYS"
     })
     @GET("shop")
-    Call<SearchDataList> getSearchList(@Query("query") String queryKey, @Query("display") int displayValue, @Query("start") int start, @Query("sort") String sortType);
+    Call<SearchDataList> getSearchList(@Query("query") String queryKey, @Query("display") int displayValue, @Query("start") int start, @Query("sort") String sortType);*/
 
 
     @Headers({

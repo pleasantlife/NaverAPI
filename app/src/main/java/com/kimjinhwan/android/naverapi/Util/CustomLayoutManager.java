@@ -29,4 +29,6 @@ public class CustomLayoutManager extends LinearLayoutManager {
             Log.e("Error : ", " In RecyclerView ViewHolder");
         }
     }
+
+
 }
