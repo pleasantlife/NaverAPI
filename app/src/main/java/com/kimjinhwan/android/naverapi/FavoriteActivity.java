@@ -4,16 +4,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.kimjinhwan.android.naverapi.Adapter.FavoriteAdapter;
 import com.kimjinhwan.android.naverapi.Util.DBHelper;
@@ -76,7 +77,7 @@ public class FavoriteActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.deleteFavoriteAll:
                 if(favoriteAdapter.getItemCount() != 0) {
-                    AlertDialog.OnClickListener positiveListener = new AlertDialog.OnClickListener() {
+                   AlertDialog.OnClickListener positiveListener = new AlertDialog.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             database = SQLiteDatabase.openOrCreateDatabase("data/data/" + FavoriteActivity.this.getApplicationContext().getPackageName() + "/databases//" + DATABASE_NAME, null);
