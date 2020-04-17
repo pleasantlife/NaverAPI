@@ -49,11 +49,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_NAME;
 import static com.kimjinhwan.android.naverapi.Util.DBHelper.DATABASE_VERSION;
+import static com.kimjinhwan.android.naverapi.Util.RetrofitUtil.NAVER_URL;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener{
 
 
-    public static String NAVER_URL = "https://openapi.naver.com/v1/search/";
+
 
     TextView textLowPrice;
     ImageButton btnSearch;
